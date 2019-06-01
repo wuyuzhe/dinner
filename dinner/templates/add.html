@@ -1,0 +1,49 @@
+{% extends 'blade.html' %}
+{% block mainbody %}
+<script type="text/javascript" src="/static/js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.ajaxfileupload.js"></script>
+<div class="container">
+<form action="/create" method="post">
+    {% csrf_token %}
+        <label for="foodname">菜名</label>
+        <div class="input-group">
+          <input type="text" class="form-control" id="foodname" placeholder="青椒炒肉"/>
+        </div>
+        <label for="foodimg">图片</label>
+        <div class="input-group">
+            <input type="file" class="file" id="file_upload" onchange="FileUpload()"/>
+        </div>
+        <hr class="mb-4">
+        <button class="btn btn-primary btn-lg btn-block" type="button" onclick="add()">add</button>
+</form>
+</div>
+
+<script type="text/javascript">
+    function add(){
+        var foodname = $('#foodname').val()
+        var csrfitem = $('input[name="csrfmiddlewaretoken"]')[0]
+        var csrf = csrfitem.value;
+        $.post('/create',
+            {
+            foodname:foodname,
+            csrfmiddlewaretoken:csrf
+            },
+            function(result){
+                alert(result.msg);
+                if(result.success){
+                    location.href='/'
+                }else{
+                    location.href='/add'
+                }
+        },'json')
+    }
+    function FileUpload() {
+        $("#file_upload").ajaxfileupload({
+            action:'/uploadfile',
+            onComplete:function(success,path){
+                console.log(path)
+            }
+        });
+    }
+</script>
+{% endblock %}
